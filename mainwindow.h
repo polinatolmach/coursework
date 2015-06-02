@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "syntaxlighter.h"
+#include "codeeditor.h"
 
 #include <QMainWindow>
 #include <QtCore>
@@ -36,12 +37,6 @@
  class QLineEdit;
  class QProgressBar;
 
- class TextEdit;
-
-
-
-
-
 namespace Ui {
 class MainWindow;
 
@@ -55,22 +50,24 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    QString textUnderCursor() const;
+
 protected:
 
 
 private slots:
 
- //   QString extractFilename(QString path);
-//    void switchToPrevTab();
-//    void switchToNextTab();
+    void switchToPrevTab();
+    void switchToNextTab();
+
     void makeNewTab();
     void deleteTab(int);
     void deleteCurrentTab();
 
     void on_actionNew_triggered();
-//    void on_actionOpen_triggered();
-//    void on_actionSave_triggered();
-//    void on_actionSave_As_triggered();
+    void on_actionOpen_triggered();
+    void on_actionSave_triggered();
+    void on_actionSave_As_triggered();
     void on_actionCopy_triggered();
     void on_actionPaste_triggered();
     void on_actionCut_triggered();
@@ -78,37 +75,41 @@ private slots:
     void on_actionRedo_triggered();
     void on_actionExit_triggered();
     void on_actionAbout_triggered();
-    void highlightCurrentLine();
     void on_actionNew_tab_triggered();
+    void on_actionSelect_All_triggered();
 
 private:
-//    void saveFileAs();
-//    void saveFile();
-//    void openFile();
+    void displaySettingsDialog();
+    void saveFileAs();
+    void saveFile();
+    void openFile();
 
-    QString textUnderCursor() const;
-   // QString extractFilename(QString path);
+    void setupEditor();
+    QString extractFilename(QString path);
     int currentTab();
     int lightfactor;
     void setTabName(unsigned int index, QString text);
 
     Ui::MainWindow *ui;
-  //  QString curFilename;
-
     QShortcut *shortcut;
 
     struct Tab {
         int number;
         QString path;
         QString filename;
-        QPlainTextEdit *plainTextEdit;
+        QCodeEditor *editor;
         SyntaxLighter *highlighter;
+        ~Tab()
+        {
+        delete editor;
+        delete highlighter;
+        }
     };
-    QVector<Tab> tabs;
-
-
-
+    QVector<Tab*> tabs;
 };
+
+
+#endif // MAINWINDOW_H
 
 
 #endif // MAINWINDOW_H
