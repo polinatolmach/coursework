@@ -12,21 +12,44 @@ SyntaxLighter::SyntaxLighter(QTextDocument *parent) :
     keywordFormat.setForeground(Qt::darkBlue);
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
-    keywordPatterns << "\\bchar\\b" << "\\bclass\\b" << "\\bconst\\b"
-                 << "\\bdouble\\b" << "\\benum\\b" << "\\bexplicit\\b"
-                 << "\\bfriend\\b" << "\\binline\\b" << "\\bint\\b"
-                 << "\\blong\\b" << "\\bnamespace\\b" << "\\boperator\\b"
-                 << "\\bprivate\\b" << "\\bprotected\\b" << "\\bpublic\\b"
-                 << "\\bshort\\b" << "\\bsignals\\b" << "\\bsigned\\b"
-                 << "\\bslots\\b" << "\\bstatic\\b" << "\\bstruct\\b"
-                 << "\\btemplate\\b" << "\\btypedef\\b" << "\\btypename\\b"
-                 << "\\bunion\\b" << "\\bunsigned\\b" << "\\bfunction\\b"<< "\\bvirtual\\b"
-                 << "\\bvoid\\b" << "\\bvolatile\\b";
+    keywordPatterns   << "\\balighas\\b" << "\\balignof\\b"
+                      << "\\band\\b"  << "\\band_eq\\b"<<  "\\basm\\b"  << "\\bauto\\b"
+                      << "\\bbitand\\b" << "\\bbitor\\b"<< "\\bbool\\b" << "\\bbreak\\b"
+                      << "\\bcase\\b" << "\\bcatch\b" << "\\bchar\\b"
+                      << "\\bclass\\b"  << "\\bcompl\\b" << "\\bconcept\\b"<<"\\bconst\\b"
+                      << "\\bconstexpr\\b" << "\\bconst_cast\\b"
+                      << "\\bcontinue\\b" << "\\bdecltype\\b" << "\\bdefault\\b"
+                      << "\\bdelete\\b" << "\\bdo\\b" << "\\bdouble\\b""<<\\bdynamic_cast\\b"
+                      << "\\belse\\b" << "\\benum\\b" << "\\bexplicit\\b"
+                      << "\\bexport\\b" << "\\bextern\\b" << "\\bfalse\\b"
+                      << "\\bfloat\\b" << "\\bfor\\b" << "\\bforeach\\b"
+                      << "\\bfriend\\b" << "\\bfloat\\b" << "\\bgoto\\b"<< "\\bif\\b"
+                      << "\\bifdef\\b" << "\\bifndef\\b"<< "\\bimplement\\b"
+                      <<"\\binline\\b" << "\\bint\\b"
+                      << "\\blong\\b" << "\\bmutable\b" << "\\bnamespace\\b"
+                      << "\\bnew\\b" <<"\\bnoexcept\\b"<< "\\bnot\\b" << "\\bnot_eq\\b"
+                      << "\\boperator\\b" << "\\bor\\b" << "\\bor_eq\\b"
+                      << "\\boverride\\b" << "\\bprivate\\b" << "\\bprotected\\b""<<\\bpublic\\b"
+                      << "\\bregister\\b" << "\\breinterpret_cast\\b" << "\\brequires\\b"
+                      << "\\breturn\\b" << "\\bshort\\b" << "\\bsignals\\b"
+                      << "\\bsigned\\b" << "\\bsizeof\\b" << "\\bslots\\b"
+                      << "\\bstatic\\b" << "\\bstatic_assert\\b" << "\\bstatic_cast\\b"
+                      << "\\bstruct\\b"
+                      << "\\bswitch\\b" << "\\btemplate\\b"<<"\\bthis\\b"
+                      << "\\bthread_local\\b" << "\\bthrow\\b"
+                      << "\\btrue\\b" << "\\btry\b" << "\\btypedef\\b"
+                      << "\\btypeid\\b" <<"\\btypename\\b"<< "\\bunion\\b" << "\\bunsigned\\b"
+                      << "\\busing\\b" << "\\bvirtual\\b" << "\\bvoid\\b"
+                      << "\\bvolatile\\b" << "\\bwchar_t\\b" << "\\bwhile\\b""<<\\xor\\b"
+                      << "\\bxor_eq\\b" ;
+
     foreach (QString pattern, keywordPatterns) {
         rule.pattern = QRegExp(pattern);
         rule.format = keywordFormat;
         highlightingRules.append(rule);
     }
+
+
 
     classFormat.setFontWeight(QFont::Bold);
     classFormat.setForeground(Qt::darkMagenta);
@@ -52,8 +75,12 @@ SyntaxLighter::SyntaxLighter(QTextDocument *parent) :
     rule.format = functionFormat;
     highlightingRules.append(rule);
 
+    preprocessorFormat.setForeground(Qt::darkRed);
+    rule.pattern = QRegExp("#.*");
+    rule.format = preprocessorFormat;
+    highlightingRules.append(rule);
 
-    numberFormat.setForeground(Qt::green);
+    numberFormat.setForeground(Qt::darkGreen);
     rule.pattern = QRegExp("[0-9]");
     rule.format = numberFormat;
     highlightingRules.append(rule);
@@ -61,6 +88,10 @@ SyntaxLighter::SyntaxLighter(QTextDocument *parent) :
 
     commentStartExpression = QRegExp("/\\*");
     commentEndExpression = QRegExp("\\*/");
+}
+
+SyntaxLighter::~SyntaxLighter()
+{
 }
 
 void SyntaxLighter::highlightBlock(const QString &text)
