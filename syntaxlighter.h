@@ -13,6 +13,7 @@ class SyntaxLighter : public QSyntaxHighlighter
 
 public:
  SyntaxLighter(QTextDocument *parent = 0);
+ ~SyntaxLighter();
 
 protected:
 
@@ -37,9 +38,8 @@ private:
        QTextCharFormat quotationFormat;
        QTextCharFormat functionFormat;
        QTextCharFormat numberFormat;
+       QTextCharFormat preprocessorFormat;
    };
 
-
-
-
 #endif
+
