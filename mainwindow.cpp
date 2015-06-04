@@ -7,6 +7,8 @@
 #include <QVector>
 #include <QFileInfo>
 #include <QString>
+#include <QToolButton>
+#include <QFileDialog>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -16,19 +18,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
     setupEditor();
-
+    //Set window settings.
+    this->setWindowIcon(QIcon(":/texticon.png"));
     this->setWindowTitle("Untitled - pEdit 1.0");
     this->setAcceptDrops(true);
-    this->lightfactor = 120;
-
     setCentralWidget(ui->tabWidget);
-
 
     QToolButton *newTabButton = new QToolButton(this);
     ui->tabWidget->setCornerWidget(newTabButton);
     newTabButton->setAutoRaise(true);
     newTabButton->setText("+");
-     //connect signals
+    //Connecting signals for making and deleting tabs.
     QObject::connect(newTabButton, SIGNAL(clicked()), this, SLOT(makeNewTab()));
     QObject::connect(ui->tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(deleteTab(int)));
 }
@@ -40,25 +40,19 @@ MainWindow::~MainWindow()
 
 void MainWindow::setupEditor()
 {
-tabs.clear();
-tabs.resize(1);
-MainWindow::setWindowTitle("Untitled - pEdit");
-
- MainWindow::setWindowTitle("Untitled - pEdit");
- MainWindow::setWindowIcon(QIcon(QApplication::applicationDirPath() + "/text-editor.png"));
- ui->tabWidget->setTabsClosable(false);
-tabs.clear();
-
-Tab *tab = new Tab();
-tabs.push_back(tab);
-tab->editor = new QCodeEditor();
-tab->highlighter = new SyntaxLighter(tab->editor->document());
-ui->tabWidget->addTab(tab->editor, "Untitled");
-tab->number = 0;//tabs.back()->number + 1;
-tab->path = "";
-tab->filename = "";
-ui->tabWidget->setTabText(0, "Untitled");
-
+    //Creating the first tab.
+    tabs.resize(1);
+    tabs.clear();
+    ui->tabWidget->setTabsClosable(false);
+    Tab *tab = new Tab();
+    tabs.push_back(tab);
+    tab->editor = new QCodeEditor();
+    tab->highlighter = new SyntaxLighter(tab->editor->document());
+    ui->tabWidget->addTab(tab->editor, "Untitled");
+    tab->number = 0;
+    tab->path = "";
+    tab->filename = "";
+    ui->tabWidget->setTabText(0, "Untitled");
 }
 
 
@@ -66,20 +60,16 @@ ui->tabWidget->setTabText(0, "Untitled");
 QString MainWindow::extractFilename(QString path)
 {
     std::string stdPath = path.toStdString();
-  //  #ifdef WIN32
-  //      return QString::fromStdString(stdPath.substr(stdPath.find_last_of('\\') + 1));
-  //  #else
-       return QString::fromStdString(stdPath.substr(stdPath.find_last_of('/') + 1));
-  //  #endif
+    return QString::fromStdString(stdPath.substr(stdPath.find_last_of('/') + 1));
 }
 
 
 void MainWindow::openFile()
 {
-    QString tmpPath = QFileDialog::getOpenFileName(this);
-    QFile file(tmpPath);
+    QString tempPath = QFileDialog::getOpenFileName(this, "Open text file");
+    QFile file(tempPath);
     if(file.open(QIODevice::ReadOnly|QIODevice::Text)) {
-        tabs[currentTab()]->path = tmpPath;
+        tabs[currentTab()]->path = tempPath;
         QByteArray byteArray = file.readAll();
         tabs[currentTab()]->editor->setPlainText(byteArray.data());
 
@@ -98,7 +88,9 @@ int MainWindow::currentTab()
 
 void MainWindow::saveFileAs()
 {
-    QString tempPath = QFileDialog::getSaveFileName();
+    QString tempPath = QFileDialog::getSaveFileName(0,"Save file",QDir::currentPath(),
+                                                    "Text file (*.txt);;Header (*.h);;Source file(*.cpp)",
+                                                        new QString("Text files (*.txt)"));
     QFile file(tempPath);
    if (file.open(QIODevice::WriteOnly|QIODevice::Text)) {
         tabs[currentTab()]->path = tempPath;
@@ -166,8 +158,6 @@ void MainWindow::on_actionNew_triggered()
 
 void MainWindow::makeNewTab()
 {
-
-   // tabs.resize(tabs.size()+1);
     Tab *tab = new Tab();
     tab->editor = new QCodeEditor();
     tab->highlighter = new SyntaxLighter(tab->editor->document());
@@ -176,7 +166,6 @@ void MainWindow::makeNewTab()
     tab->path = "";
     tab->filename = "";
     tabs.push_back(tab);
-
 
     ui->tabWidget->setCurrentIndex(tab->number);
 
@@ -194,20 +183,20 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-     QMessageBox::about(this,tr("About"), tr("<h1>Help</h1>Here you can get some help.</br> And information."));
+     QMessageBox::about(this,tr("About"), tr("<h1>pEdit v1.0</h1>A text editor supporting C++ syntax highlighting and "
+                                             "keywords completing. <br> Polina Tolmach, 2015 </br>"));
+
 }
 
-
-
-  void MainWindow::setTabName(unsigned int index, QString text){
+void MainWindow::setTabName(unsigned int index, QString text)
+{
       ui->tabWidget->setTabText(index, text);
-  }
+}
 
 
 void MainWindow::on_actionNew_tab_triggered()
 {
     makeNewTab();
-
 }
 
 
@@ -243,10 +232,10 @@ void MainWindow::deleteCurrentTab()
     deleteTab(currentTab());
 }
 
-void MainWindow::deleteTab(int i)
+void MainWindow::deleteTab(int tab_number)
 {
-    tabs.erase(tabs.begin() + i);
-    ui->tabWidget->removeTab(i);
+    tabs.erase(tabs.begin() + tab_number);
+    ui->tabWidget->removeTab(tab_number);
     if (tabs.size() == 1) {
         ui->tabWidget->setTabsClosable(false);
     }
@@ -256,5 +245,3 @@ void MainWindow::on_actionSelect_All_triggered()
 {
     tabs[currentTab()]->editor->selectAll();
 }
-
-
