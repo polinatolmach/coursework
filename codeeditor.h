@@ -1,3 +1,13 @@
+/*
+ * Created by Polina Tolmach 
+ *
+ * Distributed under the MIT License
+ * http://opensource.org/licenses/MIT
+ *
+ * A part of pEdit project
+ *
+ */
+
 #ifndef CODEEDITOR
 #define CODEEDITOR
 
@@ -6,13 +16,10 @@
 #include <QAbstractItemModel>
 #include <QCompleter>
 
-QT_BEGIN_NAMESPACE
 class QPaintEvent;
 class QResizeEvent;
 class QSize;
 class QWidget;
-QT_END_NAMESPACE
-
 class QCompleter;
 class LineNumberArea;
 
@@ -25,32 +32,31 @@ public:
     ~QCodeEditor();
 
     void lineNumberAreaPaintEvent(QPaintEvent *event);
-    int lineNumberAreaWidth();
-    //void setTabSpaces(const int tabStop);
-    //void setFont(const QFont& font);
-    void setCompleter(QCompleter *custom_completer);
+    int lineNumberAreaSize();
+    void addCompleter(QCompleter *custom_completer);
     QCompleter *completer() const;
-    QString textUnderCursor() const;
-    QAbstractItemModel *modelFromFile(const QString& fileName);
+    QString currentText() const;
+    QAbstractItemModel *modelFromTextfile(const QString& fileName);
 
 protected:
     void resizeEvent(QResizeEvent *resize_event);
-    void focusInEvent(QFocusEvent *completion_event);// Q_DECL_OVERRIDE;
-    void keyPressEvent(QKeyEvent *completion_event);// Q_DECL_OVERRIDE;
+    void focusInEvent(QFocusEvent *completion_event);
+    void keyPressEvent(QKeyEvent *completion_event);
 
 private slots:
-    void updateLineNumberAreaWidth(int newBlockCount);
+    void changeLineNumberAreaSize(int newBlockCount);
     void highlightCurrentLine();
-    void updateLineNumberArea(const QRect &, int);
+    void changeLineNumberArea(const QRect &rectangle, int);
     void insertCompletion(const QString &completion);
 
 private:
     QWidget *lineNumberArea;
-    QColor marginForeground;
-    QColor marginBackground;
+    QColor edgingNumbersColour;
+    QColor edgingBackground;
     QColor currentLineBackground;
     QCompleter *codeCompleter;
 };
+
 
 class LineNumberArea : public QWidget
 {
@@ -60,7 +66,7 @@ public:
     }
 
     QSize sizeHint() const {
-        return QSize(codeEditor->lineNumberAreaWidth(), 0);
+        return QSize(codeEditor->lineNumberAreaSize(), 0);
     }
 
 protected:
@@ -73,3 +79,4 @@ private:
 };
 
 #endif // CODEEDITOR
+
