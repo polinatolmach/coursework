@@ -1,9 +1,18 @@
+/*
+ * Created by Polina Tolmach 
+ *
+ * Distributed under the MIT License
+ * http://opensource.org/licenses/MIT
+ *
+ * A part of pEdit project
+ *
+ */
+
 #ifndef SYNTAXLIGHTER_H
 #define SYNTAXLIGHTER_H
 
 #include <QtGui>
 #include <QTextDocument>
-#include <QHash>
 #include <QRegExp>
 #include <QTextCharFormat>
 
@@ -42,4 +51,3 @@ private:
    };
 
 #endif
-
