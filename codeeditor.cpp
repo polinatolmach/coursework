@@ -1,49 +1,66 @@
-#include <QtWidgets>
+/*
+ * Created by Polina Tolmach 
+ *
+ * Distributed under the MIT License
+ * http://opensource.org/licenses/MIT
+ *
+ * A part of pEdit project
+ *
+ * A "codeeditor.h" implementation
+ * 
+ */
 
 #include "codeeditor.h"
+
+#include <QtWidgets>
+
 
 QCodeEditor::QCodeEditor(QWidget *parent) :
     QPlainTextEdit(parent), codeCompleter(0)
 {
-
+    //Setting up font and tab size in our editor.
     QFont font;
     font.setFamily("Courier");
     font.setStyleHint(QFont::Monospace);
     font.setFixedPitch(true);
     font.setPointSize(10);
     this->setFont(font);
-    const int tabStop = 4;  // 4 characters
+    const int tabStop = 4;  // 4 characters.
     QFontMetrics metrics(font);
     this->setTabStopWidth(tabStop * metrics.width(' '));
+
     currentLineBackground = QColor(247, 229, 247);
-    marginBackground = QColor(227, 221, 235);
-    marginForeground = QColor(122, 91, 161);
+    edgingBackground = QColor(227, 221, 235);
+    edgingNumbersColour = QColor(122, 91, 161);
 
     this->setLineWrapMode(QPlainTextEdit::NoWrap);
 
     lineNumberArea = new LineNumberArea(this);
 
-    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
-    connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
+    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(changeLineNumberAreaSize(int)));
+    connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(changeLineNumberArea(QRect,int)));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
 
-    updateLineNumberAreaWidth(0);
+    changeLineNumberAreaSize(0);
     highlightCurrentLine();
 
-
+  //*Creating of a completer, passing it a list of
+   /*keywords for completing, adding a completer
+   /* to an editor.
+    */
     codeCompleter = new QCompleter(this);
-    codeCompleter->setModel(modelFromFile(":/wordlist.txt"));
+    codeCompleter->setModel(modelFromTextfile(":/wordlist.txt"));
     codeCompleter->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
     codeCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     codeCompleter->setWrapAround(false);
-    this->setCompleter(codeCompleter);
+    this->addCompleter(codeCompleter);
 }
 
 QCodeEditor::~QCodeEditor()
 {
 }
 
-void QCodeEditor::setCompleter(QCompleter *custom_completer)
+void QCodeEditor::addCompleter(QCompleter *custom_completer)
 {
     if (codeCompleter)
         QObject::disconnect(codeCompleter, 0, this, 0);
@@ -60,12 +77,7 @@ void QCodeEditor::setCompleter(QCompleter *custom_completer)
                      this, SLOT(insertCompletion(QString)));
 }
 
-//QCompleter *QCodeEditor::completer() const
-//{
-//    return codeCompleter;
-//}
-
-QAbstractItemModel *QCodeEditor::modelFromFile(const QString& fileName)
+QAbstractItemModel *QCodeEditor::modelFromTextfile(const QString& fileName)
 {
     QFile file(fileName);
     if (!file.open(QFile::ReadOnly))
@@ -88,11 +100,11 @@ QAbstractItemModel *QCodeEditor::modelFromFile(const QString& fileName)
     return new QStringListModel(words, codeCompleter);
 }
 
-QString QCodeEditor::textUnderCursor() const
+QString QCodeEditor::currentText() const
 {
-    QTextCursor tc = textCursor();
-    tc.select(QTextCursor::WordUnderCursor);
-    return tc.selectedText();
+    QTextCursor text_cursor = textCursor();
+    text_cursor.select(QTextCursor::WordUnderCursor);
+    return text_cursor.selectedText();
 }
 
 void QCodeEditor::insertCompletion(const QString& completion)
@@ -117,7 +129,6 @@ void QCodeEditor::focusInEvent(QFocusEvent *completion_event)
 void QCodeEditor::keyPressEvent(QKeyEvent *completion_event)
 {
     if (codeCompleter && codeCompleter->popup()->isVisible()) {
-        // The following keys are forwarded by the completer to the widget
        switch (completion_event->key()) {
        case Qt::Key_Enter:
        case Qt::Key_Return:
@@ -125,26 +136,17 @@ void QCodeEditor::keyPressEvent(QKeyEvent *completion_event)
        case Qt::Key_Tab:
        case Qt::Key_Backtab:
             completion_event->ignore();
-            return; // let the completer do default behavior
+            return;
        default:
            break;
        }
     }
 
-    bool isShortcut = ((completion_event->modifiers() & Qt::ControlModifier) && completion_event->key() == Qt::Key_E); // CTRL+E
-    if (!codeCompleter || !isShortcut) // do not process the shortcut when we have a completer
-        QPlainTextEdit::keyPressEvent(completion_event);
+    QPlainTextEdit::keyPressEvent(completion_event);
 
-    const bool ctrlOrShift = completion_event->modifiers() & (Qt::ControlModifier | Qt::ShiftModifier);
-    if (!codeCompleter || (ctrlOrShift && completion_event->text().isEmpty()))
-        return;
-
-    static QString eow("~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-="); // end of word
-    bool hasModifier = (completion_event->modifiers() != Qt::NoModifier) && !ctrlOrShift;
-    QString completionPrefix = textUnderCursor();
-
-    if (!isShortcut && (hasModifier || completion_event->text().isEmpty()|| completionPrefix.length() < 3
-                      || eow.contains(completion_event->text().right(1)))) {
+    static QString endofword("~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-="); // end of word
+    QString completionPrefix = currentText();
+    if (completionPrefix.length() < 3 || endofword.contains(completion_event->text().right(1))) {
         codeCompleter->popup()->hide();
         return;
     }
@@ -155,57 +157,47 @@ void QCodeEditor::keyPressEvent(QKeyEvent *completion_event)
     }
     QRect cursor_rect = cursorRect();
     cursor_rect.setWidth(codeCompleter->popup()->sizeHintForColumn(0)
-                + codeCompleter->popup()->verticalScrollBar()->sizeHint().width());
-    codeCompleter->complete(cursor_rect); // popup it up!
+                         + codeCompleter->popup()->verticalScrollBar()->sizeHint().width());
+    codeCompleter->complete(cursor_rect);
 }
 
-//void QCodeEditor::setTabSpaces(const int tabStop) {
-//    QFontMetrics metrics(this->font());
-//    this->setTabStopWidth(tabStop * metrics.width(' '));
-//}
-
-//void QCodeEditor::setFont(const QFont& font)
-//{
-//    this->setTabSpaces(4);
-//    this->setFont(font);
-//}
-
-int QCodeEditor::lineNumberAreaWidth()
+int QCodeEditor::lineNumberAreaSize()
 {
-    int digits = 1;
+    int lines_number = 1;
     int max = qMax(1, blockCount());
     while (max >= 10) {
         max /= 10;
-        ++digits;
+        ++lines_number;
     }
 
-    int space = 3 + fontMetrics().width(QLatin1Char('9')) * digits;
+    int edging_space = 3 + fontMetrics().width(QLatin1Char('9')) * lines_number;
 
-    return space;
+    return edging_space;
 }
 
-void QCodeEditor::updateLineNumberAreaWidth(int /* newBlockCount */)
+void QCodeEditor::changeLineNumberAreaSize(int /* eachNewBlockCount */)
 {
-    setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
+    setViewportMargins(lineNumberAreaSize(), 0, 0, 0);
 }
 
-void QCodeEditor::updateLineNumberArea(const QRect &rect, int dy)
+void QCodeEditor::changeLineNumberArea(const QRect &rectangle, int dy)
 {
     if (dy)
         lineNumberArea->scroll(0, dy);
     else
-        lineNumberArea->update(0, rect.y(), lineNumberArea->width(), rect.height());
+        lineNumberArea->update(0, rectangle.y(), lineNumberArea->width(), rectangle.height());
 
-    if (rect.contains(viewport()->rect()))
-        updateLineNumberAreaWidth(0);
+    if (rectangle.contains(viewport()->rect()))
+        changeLineNumberAreaSize(0);
 }
 
 void QCodeEditor::resizeEvent(QResizeEvent *resize_event)
 {
     QPlainTextEdit::resizeEvent(resize_event);
 
-    QRect cr = contentsRect();
-    lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
+    QRect rectangle_area = contentsRect();
+    lineNumberArea->setGeometry(QRect(rectangle_area.left(), rectangle_area.top(),
+                                      lineNumberAreaSize(), rectangle_area.height()));
 }
 
 void QCodeEditor::highlightCurrentLine()
@@ -227,7 +219,7 @@ void QCodeEditor::highlightCurrentLine()
 void QCodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
 {
     QPainter painter(lineNumberArea);
-    painter.fillRect(event->rect(), marginBackground);
+    painter.fillRect(event->rect(), edgingBackground);
 
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
@@ -237,7 +229,7 @@ void QCodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible() && bottom >= event->rect().top()) {
             QString number = QString::number(blockNumber + 1);
-            painter.setPen(marginForeground);
+            painter.setPen(edgingNumbersColour);
             painter.drawText(0, top, lineNumberArea->width(), fontMetrics().height(),
                              Qt::AlignRight, number);
         }
