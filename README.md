@@ -6,3 +6,6 @@ with text and text and source code files. Written on Qt 5.4.
 qmake -project
 qmake
 make
+
+
+mingw32-make makefile
