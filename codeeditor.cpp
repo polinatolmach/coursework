@@ -1,5 +1,5 @@
 /*
- * Created by Polina Tolmach 
+ * Created by Polina Tolmach
  *
  * Distributed under the MIT License
  * http://opensource.org/licenses/MIT
@@ -7,7 +7,7 @@
  * A part of pEdit project
  *
  * A "codeeditor.h" implementation
- * 
+ *
  */
 
 #include "codeeditor.h"
@@ -100,6 +100,7 @@ QAbstractItemModel *QCodeEditor::modelFromTextfile(const QString& fileName)
     return new QStringListModel(words, codeCompleter);
 }
 
+//Select a word under the cursor and return it.
 QString QCodeEditor::currentText() const
 {
     QTextCursor text_cursor = textCursor();
@@ -107,6 +108,11 @@ QString QCodeEditor::currentText() const
     return text_cursor.selectedText();
 }
 
+//* The insertCompletion() function is responsible for completing
+ /*the word using a QTextCursor objectValidates to ensure
+  *that the completer's widget is TextEdit before inserting
+  *the extra characters to complete the word.
+  */
 void QCodeEditor::insertCompletion(const QString& completion)
 {
     if (codeCompleter->widget() != this)
@@ -119,6 +125,7 @@ void QCodeEditor::insertCompletion(const QString& completion)
     setTextCursor(text_cursor);
 }
 
+//Gives the keys to an editor.
 void QCodeEditor::focusInEvent(QFocusEvent *completion_event)
 {
     if (codeCompleter)
@@ -130,11 +137,9 @@ void QCodeEditor::keyPressEvent(QKeyEvent *completion_event)
 {
     if (codeCompleter && codeCompleter->popup()->isVisible()) {
        switch (completion_event->key()) {
-       case Qt::Key_Enter:
        case Qt::Key_Return:
        case Qt::Key_Escape:
        case Qt::Key_Tab:
-       case Qt::Key_Backtab:
             completion_event->ignore();
             return;
        default:
@@ -144,9 +149,8 @@ void QCodeEditor::keyPressEvent(QKeyEvent *completion_event)
 
     QPlainTextEdit::keyPressEvent(completion_event);
 
-    static QString endofword("~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-="); // end of word
     QString completionPrefix = currentText();
-    if (completionPrefix.length() < 3 || endofword.contains(completion_event->text().right(1))) {
+    if (completionPrefix.length() < 3 ) {
         codeCompleter->popup()->hide();
         return;
     }
