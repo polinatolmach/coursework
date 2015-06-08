@@ -1,3 +1,13 @@
+/*
+ * Created by Polina Tolmach
+ *
+ * Distributed under the MIT License
+ * http://opensource.org/licenses/MIT
+ *
+ * A part of pEdit project
+ *
+ */
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -11,10 +21,14 @@
 #include <QVector>
 #include <QString>
 
+
+
 namespace Ui {
 class MainWindow;
 
 }
+
+
 
 class MainWindow : public QMainWindow
 {
@@ -25,6 +39,7 @@ public:
     ~MainWindow();
 
     QString currentText() const;
+
 
 protected:
 
@@ -48,8 +63,13 @@ private slots:
     void on_actionNew_tab_triggered();
     void on_actionSelect_All_triggered();
 
+    void on_tabWidget_tabBarDoubleClicked();
     void switchToPrevTab();
     void switchToNextTab();
+
+    void on_actionCompile_triggered();
+    void compile();
+    void on_actionCompiler_options_triggered();
 
 private:
 
@@ -77,7 +97,5 @@ private:
     };
     QVector<Tab*> tabs;
 };
-
 #endif // MAINWINDOW_H
 \
-
