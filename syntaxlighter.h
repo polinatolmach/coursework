@@ -1,5 +1,5 @@
 /*
- * Created by Polina Tolmach 
+ * Created by Polina Tolmach
  *
  * Distributed under the MIT License
  * http://opensource.org/licenses/MIT
@@ -51,3 +51,4 @@ private:
    };
 
 #endif
+
