@@ -1,5 +1,21 @@
+/*
+ * Created by Polina Tolmach
+ *
+ * Distributed under the MIT License
+ * http://opensource.org/licenses/MIT
+ *
+ * A part of pEdit project
+ *
+ */
+
+
 #include "mainwindow.h"
+
+
 #include "ui_mainwindow.h"
+
+#include "options.h"
+
 #include "syntaxlighter.h"
 #include "codeeditor.h"
 
@@ -9,7 +25,12 @@
 #include <QString>
 #include <QToolButton>
 #include <QFileDialog>
+#include <QProcess>
+#include <QByteArray>
 
+
+QString path = "D:\\MinGW64\\bin\\";
+QString compiler = "g++.exe";
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -244,4 +265,42 @@ void MainWindow::deleteTab(int tab_number)
 void MainWindow::on_actionSelect_All_triggered()
 {
     tabs[currentTab()]->editor->selectAll();
+}
+
+QProcess* process;
+QString* info;
+
+void MainWindow::on_actionCompile_triggered()
+{
+    process = new QProcess();
+
+    connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(compile()));
+    process->start(QString("cmd /c "+path[0]+": & cd "+path+ " & ") + path + compiler + " " + this->tabs[currentTab()]->path + " -o temp.exe");
+    process->waitForFinished(-1);
+    delete process;
+
+    system(("\""+path+"temp.exe"+"\" & pause").toStdString().c_str());
+}
+
+
+void MainWindow::compile()
+{
+    QByteArray outData = process->readAllStandardOutput();
+        qDebug()<<QString(outData);
+}
+
+void MainWindow::on_actionCompiler_options_triggered()
+{
+   options compiler_options;
+   compiler_options.setExe(compiler);
+   compiler_options.setPath(path);
+   compiler_options.exec();
+   path = compiler_options.getPath();
+   compiler = compiler_options.getExe();
+
+}
+
+void MainWindow::on_tabWidget_tabBarDoubleClicked()
+{
+    makeNewTab();
 }
