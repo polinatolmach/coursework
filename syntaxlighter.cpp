@@ -1,5 +1,5 @@
 /*
- * Created by Polina Tolmach 
+ * Created by Polina Tolmach
  *
  * Distributed under the MIT License
  * http://opensource.org/licenses/MIT
@@ -7,7 +7,7 @@
  * A part of pEdit project
  *
  * A "syntaxlighter.h" implementation
- * 
+ *
  */
 
 #include<QtGui>
@@ -24,34 +24,29 @@ SyntaxLighter::SyntaxLighter(QTextDocument *parent) :
     keywordFormat.setForeground(Qt::darkMagenta);
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
-    keywordPatterns   << "\\balighas\\b" << "\\balignof\\b"
-                      << "\\band\\b"  << "\\band_eq\\b"<<  "\\basm\\b"  << "\\bauto\\b"
-                      << "\\bbitand\\b" << "\\bbitor\\b"<< "\\bbool\\b" << "\\bbreak\\b"
-                      << "\\bcase\\b" << "\\bcatch\b" << "\\bchar\\b"
-                      << "\\bclass\\b"  << "\\bcompl\\b" << "\\bconcept\\b"<<"\\bconst\\b"
-                      << "\\bconstexpr\\b" << "\\bconst_cast\\b"
-                      << "\\bcontinue\\b" << "\\bdecltype\\b" << "\\bdefault\\b"
-                      << "\\bdelete\\b" << "\\bdo\\b" << "\\bdouble\\b""<<\\bdynamic_cast\\b"
-                      << "\\belse\\b" << "\\benum\\b" << "\\bexplicit\\b"
-                      << "\\bexport\\b" << "\\bextern\\b" << "\\bfalse\\b"
-                      << "\\bfloat\\b" << "\\bfor\\b" << "\\bforeach\\b"
-                      << "\\bfriend\\b" << "\\bfloat\\b" << "\\bgoto\\b"<< "\\bif\\b"
-                      << "\\bifdef\\b" << "\\bifndef\\b"<< "\\bimplement\\b"
-                      <<"\\binline\\b" << "\\bint\\b" << "\\blong\\b" << "\\bmutable\b" << "\\bnamespace\\b"
-                      << "\\bnew\\b" <<"\\bnoexcept\\b"<< "\\bnot\\b" << "\\bnot_eq\\b"
-                      << "\\boperator\\b" << "\\bor\\b" << "\\bor_eq\\b"
-                      << "\\boverride\\b" << "\\bprivate\\b" << "\\bprotected\\b"<<"\\bpublic\\b"
-                      << "\\bregister\\b" << "\\breinterpret_cast\\b" << "\\brequires\\b"
-                      << "\\breturn\\b" << "\\bshort\\b" << "\\bsignals\\b"
-                      << "\\bsigned\\b" << "\\bsizeof\\b" << "\\bslots\\b"
-                      << "\\bstatic\\b" << "\\bstatic_assert\\b" << "\\bstatic_cast\\b"
-                      << "\\bstruct\\b" << "\\bswitch\\b" << "\\btemplate\\b"<<"\\bthis\\b"
-                      << "\\bthread_local\\b" << "\\bthrow\\b"
-                      << "\\btrue\\b" << "\\btry\b" << "\\btypedef\\b"
-                      << "\\btypeid\\b" <<"\\btypename\\b"<< "\\bunion\\b" << "\\bunsigned\\b"
-                      << "\\busing\\b" << "\\bvirtual\\b" << "\\bvoid\\b"
-                      << "\\bvolatile\\b" << "\\bwchar_t\\b" << "\\bwhile\\b""<<\\xor\\b"
-                      << "\\bxor_eq\\b" ;
+    keywordPatterns   << "\\balighas\\b" << "\\balignof\\b" << "\\band\\b"  << "\\band_eq\\b"
+                      <<  "\\basm\\b"  << "\\bauto\\b" << "\\bbitand\\b" << "\\bbitor\\b"
+                      << "\\bbool\\b" << "\\bbreak\\b" << "\\bcase\\b" << "\\bcatch\b"
+                      << "\\bchar\\b"<< "\\bclass\\b"  << "\\bcompl\\b" << "\\bconcept\\b"
+                      <<"\\bconst\\b" << "\\bconstexpr\\b" << "\\bconst_cast\\b" << "\\bcontinue\\b"
+                      << "\\bdecltype\\b" << "\\bdefault\\b" << "\\bdelete\\b" << "\\bdo\\b"
+                      << "\\bdouble\\b""<<\\bdynamic_cast\\b" << "\\belse\\b" << "\\benum\\b"
+                      << "\\bexplicit\\b"<< "\\bexport\\b"  << "\\bextern\\b" << "\\bfalse\\b"
+                      << "\\bfloat\\b" << "\\bfor\\b" << "\\bforeach\\b" << "\\bfriend\\b"
+                      << "\\bfloat\\b" << "\\bgoto\\b"<< "\\bif\\b" << "\\bifdef\\b"
+                      << "\\bifndef\\b"<< "\\bimplement\\b" <<"\\binline\\b" << "\\bint\\b"
+                      << "\\blong\\b" << "\\bmutable\b" << "\\bnamespace\\b" << "\\bnew\\b"
+                      <<"\\bnoexcept\\b"<< "\\bnot\\b" << "\\bnot_eq\\b" << "\\boperator\\b"
+                      << "\\bor\\b" << "\\bor_eq\\b"  << "\\boverride\\b" << "\\bprivate\\b"
+                      << "\\bprotected\\b"<<"\\bpublic\\b" << "\\bregister\\b" << "\\breinterpret_cast\\b"
+                      << "\\brequires\\b" << "\\breturn\\b" << "\\bshort\\b" << "\\bsignals\\b"
+                      << "\\bsigned\\b" << "\\bsizeof\\b" << "\\bslots\\b" << "\\bstatic\\b"
+                      << "\\bstatic_assert\\b" << "\\bstatic_cast\\b" << "\\bstruct\\b" << "\\bswitch\\b"
+                      << "\\btemplate\\b"<<"\\bthis\\b" << "\\bthread_local\\b" << "\\bthrow\\b"
+                      << "\\btrue\\b" << "\\btry\b" << "\\btypedef\\b" << "\\btypeid\\b"
+                      <<"\\btypename\\b"<< "\\bunion\\b" << "\\bunsigned\\b" << "\\busing\\b"
+                      << "\\bvirtual\\b" << "\\bvoid\\b" << "\\bvolatile\\b" << "\\bwchar_t\\b"
+                      << "\\bwhile\\b""<<\\xor\\b" << "\\bxor_eq\\b" ;
 
     foreach (QString pattern, keywordPatterns) {
         rule.pattern = QRegExp(pattern);
@@ -83,7 +78,7 @@ SyntaxLighter::SyntaxLighter(QTextDocument *parent) :
 
     functionFormat.setFontItalic(true);
     functionFormat.setForeground(Qt::blue);
-    rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
+    rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(\\()");
     rule.format = functionFormat;
     highlightingRules.append(rule);
 
@@ -115,6 +110,17 @@ void SyntaxLighter::highlightBlock(const QString &text)
     }
     setCurrentBlockState(0);
 
+  //* Multiline comment highlighting.
+   /* If no state is set, the returned value is -1.
+    * If the previous block state was "in comment" state is 1
+    * and we start the search for an end expression at the beginning of the text block.
+    * If the previousBlockState() returns 0,
+    * we start the search at the location of the first occurrence of a start expression.
+    * When an end expression is found, we count the length of the comment and apply the multilinecomment format.
+    * Then we search for the next occurrence of the start expression and repeat the process.
+    * If no end expression can be found in the current text block
+    * we set the current block state to 1, "in comment".
+    */
     int startIndex = 0;
     if (previousBlockState() != 1)
         startIndex = text.indexOf(commentStartExpression);
