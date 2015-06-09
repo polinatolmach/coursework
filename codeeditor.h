@@ -15,6 +15,9 @@
 #include <QObject>
 #include <QAbstractItemModel>
 #include <QCompleter>
+#include <QStringListModel>
+#include <QSet>
+#include <QString>
 
 class QPaintEvent;
 class QResizeEvent;
@@ -22,6 +25,7 @@ class QSize;
 class QWidget;
 class QCompleter;
 class LineNumberArea;
+class QStringListModel;
 
 class QCodeEditor : public QPlainTextEdit
 {
@@ -32,11 +36,12 @@ public:
     ~QCodeEditor();
 
     void lineNumberAreaPaintEvent(QPaintEvent *event);
-    int lineNumberAreaSize();
     void addCompleter(QCompleter *custom_completer);
+    int lineNumberAreaSize();
+
     QCompleter *completer() const;
     QString currentText() const;
-    QAbstractItemModel *modelFromTextfile(const QString& fileName);
+    QAbstractItemModel *modelFromTextfile(const QString &fileName);
 
 protected:
     void resizeEvent(QResizeEvent *resize_event);
@@ -50,11 +55,13 @@ private slots:
     void insertCompletion(const QString &completion);
 
 private:
-    QWidget *lineNumberArea;
     QColor edgingNumbersColour;
     QColor edgingBackground;
     QColor currentLineBackground;
     QCompleter *codeCompleter;
+    QWidget *lineNumberArea;
+//  QStringList&  list;
+//  QSharedPointer< QSet<QString> > allWords;
 };
 
 
