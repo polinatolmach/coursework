@@ -16,7 +16,7 @@
 
 
 QCodeEditor::QCodeEditor(QWidget *parent) :
-    QPlainTextEdit(parent), codeCompleter(0)
+    QPlainTextEdit(parent)
 {
     //Setting up font and tab size in our editor.
     QFont font;
@@ -44,12 +44,13 @@ QCodeEditor::QCodeEditor(QWidget *parent) :
     changeLineNumberAreaSize(0);
     highlightCurrentLine();
 
-  //*Creating of a completer, passing it a list of
+   /*Creating of a completer, passing it a list of
    /*keywords for completing, adding a completer
    /* to an editor.
     */
     codeCompleter = new QCompleter(this);
     codeCompleter->setModel(modelFromTextfile(":/wordlist.txt"));
+//  codeCompleter->setModel(model->setStringList(this->allWords->toList());
     codeCompleter->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
     codeCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     codeCompleter->setWrapAround(false);
@@ -62,13 +63,7 @@ QCodeEditor::~QCodeEditor()
 
 void QCodeEditor::addCompleter(QCompleter *custom_completer)
 {
-    if (codeCompleter)
-        QObject::disconnect(codeCompleter, 0, this, 0);
-
     codeCompleter = custom_completer;
-
-    if (!codeCompleter)
-        return;
 
     codeCompleter->setWidget(this);
     codeCompleter->setCompletionMode(QCompleter::PopupCompletion);
@@ -108,9 +103,9 @@ QString QCodeEditor::currentText() const
     return text_cursor.selectedText();
 }
 
-//* The insertCompletion() function is responsible for completing
- /*the word using a QTextCursor objectValidates to ensure
-  *that the completer's widget is TextEdit before inserting
+ /* The insertCompletion() function is responsible for completing
+  *the word using a QTextCursor objectValidates to ensure
+  *that the completer's widget is our CodeEditor before inserting
   *the extra characters to complete the word.
   */
 void QCodeEditor::insertCompletion(const QString& completion)
@@ -154,7 +149,6 @@ void QCodeEditor::keyPressEvent(QKeyEvent *completion_event)
         codeCompleter->popup()->hide();
         return;
     }
-
     if (completionPrefix != codeCompleter->completionPrefix()) {
         codeCompleter->setCompletionPrefix(completionPrefix);
         codeCompleter->popup()->setCurrentIndex(codeCompleter->completionModel()->index(0, 0));
@@ -173,9 +167,7 @@ int QCodeEditor::lineNumberAreaSize()
         max /= 10;
         ++lines_number;
     }
-
     int edging_space = 3 + fontMetrics().width(QLatin1Char('9')) * lines_number;
-
     return edging_space;
 }
 
@@ -206,7 +198,7 @@ void QCodeEditor::resizeEvent(QResizeEvent *resize_event)
 
 void QCodeEditor::highlightCurrentLine()
 {
-    QList<QTextEdit::ExtraSelection> extraSelections;
+    QList<QTextEdit::ExtraSelection> currentSelection;
 
     if (!isReadOnly()) {
         QTextEdit::ExtraSelection selection;
@@ -214,10 +206,10 @@ void QCodeEditor::highlightCurrentLine()
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
         selection.cursor = textCursor();
         selection.cursor.clearSelection();
-        extraSelections.append(selection);
+        currentSelection.append(selection);
     }
 
-    setExtraSelections(extraSelections);
+    setExtraSelections(currentSelection);
 }
 
 void QCodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
