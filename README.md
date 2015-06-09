@@ -8,4 +8,4 @@ qmake
 make
 
 
-mingw32-make makefile
+nmake makefile
