@@ -4,7 +4,7 @@ Text editor supporting syntax highlighting and autocompleting of keywords in C++
 with text and text and source code files. Written on Qt 5.4.
 
 qmake -project
-qmake
+qmake 
 make
 
 
