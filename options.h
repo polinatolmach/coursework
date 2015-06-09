@@ -1,3 +1,13 @@
+/*
+ * Created by Polina Tolmach
+ *
+ * Distributed under the MIT License
+ * http://opensource.org/licenses/MIT
+ *
+ * A part of pEdit project
+ *
+ */
+
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
@@ -18,8 +28,10 @@ public:
     void setExe(QString str);
     QString getPath();
     QString getExe();
+
 private slots:
-    void on_options_accepted();
+    void on_pushButton_2_clicked();
+    void on_pushButton_clicked();
 
 private:
     Ui::options *ui;
