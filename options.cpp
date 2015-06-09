@@ -1,3 +1,13 @@
+/*
+ * Created by Polina Tolmach
+ *
+ * Distributed under the MIT License
+ * http://opensource.org/licenses/MIT
+ *
+ * A part of pEdit project
+ *
+ */
+
 #include "options.h"
 #include "ui_options.h"
 
@@ -11,11 +21,6 @@ options::options(QWidget *parent) :
 options::~options()
 {
     delete ui;
-}
-
-void options::on_options_accepted()
-{
-
 }
 
 void options::setPath(QString str)
@@ -37,4 +42,14 @@ QString options::getPath()
 QString options::getExe()
 {
     return this->ui->lineEdit_2->text();
+}
+
+void options::on_pushButton_2_clicked()
+{
+    this->close();
+}
+
+void options::on_pushButton_clicked()
+{
+    this->accept();
 }
